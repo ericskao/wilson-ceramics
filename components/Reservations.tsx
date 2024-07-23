@@ -6,6 +6,44 @@ import { useState } from 'react';
 
 const Reservations = () => {
   const [wheel, setWheel] = useState<any>(null);
+  const reservations = [
+    {
+      number: 5,
+      reserved: true,
+    },
+    {
+      number: 6,
+      reserved: false,
+    },
+    {
+      number: 7,
+      reserved: false,
+    },
+    {
+      number: 8,
+      reserved: false,
+    },
+    {
+      number: 9,
+      reserved: false,
+    },
+    {
+      number: 10,
+      reserved: true,
+    },
+    {
+      number: 11,
+      reserved: false,
+    },
+    {
+      number: 12,
+      reserved: true,
+    },
+    {
+      number: 13,
+      reserved: true,
+    },
+  ];
 
   return (
     <div>
@@ -25,8 +63,22 @@ const Reservations = () => {
                 <ReservationButton setWheel={setWheel} number={3} />
               </li>
               <li>
-                <ReservationButton setWheel={setWheel} number={4} reserved />
+                <ReservationButton
+                  setWheel={setWheel}
+                  number={4}
+                  reserved
+                  isOwner={true}
+                />
               </li>
+              {reservations.map((reservation) => (
+                <li key={reservation.number}>
+                  <ReservationButton
+                    setWheel={setWheel}
+                    number={reservation.number}
+                    reserved={reservation.reserved}
+                  />
+                </li>
+              ))}
             </ul>
           </div>
         </div>

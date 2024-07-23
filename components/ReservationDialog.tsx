@@ -19,6 +19,7 @@ const ReservationDialog = ({
   setOpen: Dispatch<boolean>;
   wheel: any;
 }) => {
+  const isOwner = wheel === 4;
   return (
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -36,7 +37,13 @@ const ReservationDialog = ({
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit">Reserve</Button>
+            {isOwner ? (
+              <Button type="submit" variant="destructive">
+                Remove
+              </Button>
+            ) : (
+              <Button type="submit">Reserve</Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
