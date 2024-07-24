@@ -6,20 +6,22 @@ export async function middleware(req: NextRequest) {
   console.log('Middleware called for path:', req.nextUrl.pathname);
   console.log('NEXTAUTH_URL:', process.env.AUTH_URL);
   console.log('NODE_ENV:', process.env.NODE_ENV);
-  const requestForNextAuth = {
-    headers: {
-      cookie: req.headers.get('cookie'),
-    },
-  };
+
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET || '',
-    salt: 'authjs.session-token',
+    salt:
+      process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.session-token'
+        : 'authjs.session-token',
   });
   try {
     const token = await getToken({
       req,
-      salt: 'authjs.session-token',
+      salt:
+        process.env.NODE_ENV === 'production'
+          ? '__Secure-next-auth.session-token'
+          : 'authjs.session-token',
       secret: process.env.AUTH_SECRET || '',
     });
 
