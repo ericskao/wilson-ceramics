@@ -1,5 +1,4 @@
 import { getToken } from 'next-auth/jwt';
-import { getSession } from 'next-auth/react';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
@@ -12,9 +11,6 @@ export async function middleware(req: NextRequest) {
       cookie: req.headers.get('cookie'),
     },
   };
-  console.log('req for next auth', requestForNextAuth);
-  const session = await getSession();
-  console.log('session added', session);
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET || '',
