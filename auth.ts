@@ -8,7 +8,10 @@ const prisma = new PrismaClient();
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    Google({}),
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     Resend({
       from: 'sent@ericskao.com',
     }),
@@ -23,8 +26,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
       },
     },
   },
+  callbacks: {
+    async jwt({ token, user, account }) {
+      if (account && user) {
+        return {
+          ...token,
+          accessToken: account.access_token,
+          userId: user.id,
+        };
+      }
+      return token;
+    },
+    async session({ session, token }: { session: any; token: any }) {
+      if (session?.user) {
+        console.log('in session user', session, token);
+        session.user.id = token.userId;
+        session.accessToken = token.accessToken;
+      }
+      return session;
+    },
+  },
+  debug: process.env.NODE_ENV === 'development',
 });
