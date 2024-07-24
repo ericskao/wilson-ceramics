@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
     const token = await getToken({
       req,
       salt: 'authjs.session-token',
-      secret: process.env.NEXTAUTH_SECRET || '',
+      secret: process.env.AUTH_SECRET || '',
     });
 
     console.log('Token retrieved:', token ? 'Yes' : 'No');
