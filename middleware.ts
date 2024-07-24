@@ -7,10 +7,12 @@ export async function middleware(req: NextRequest) {
     secret: process.env.AUTH_SECRET || '',
     salt: 'authjs.session-token',
   });
+  console.log('token', token);
   const { pathname } = req.nextUrl;
 
   // Check if the user is trying to access the /dashboard route
   if (pathname.startsWith('/dashboard')) {
+    console.log('in dashboard', req);
     // If there is no token, redirect to /login
     if (!token) {
       const loginUrl = new URL('/login', req.url);
