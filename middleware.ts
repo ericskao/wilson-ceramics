@@ -1,7 +1,10 @@
+export const runtime = 'edge';
+
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
+  console.log('authsecret', process.env.AUTH_SECRET);
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET || '',
