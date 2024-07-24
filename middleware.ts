@@ -4,11 +4,28 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   console.log('authsecret', process.env.AUTH_SECRET);
+  console.log('Middleware called for path:', req.nextUrl.pathname);
+  console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
+  console.log('NODE_ENV:', process.env.NODE_ENV);
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET || '',
     salt: 'authjs.session-token',
   });
+  try {
+    const token = await getToken({
+      req,
+      salt: 'authjs.session-token',
+      secret: process.env.NEXTAUTH_SECRET || '',
+    });
+
+    console.log('Token retrieved:', token ? 'Yes' : 'No');
+    if (token) {
+      console.log('Token content:', JSON.stringify(token, null, 2));
+    }
+  } catch (error) {
+    console.error('Error retrieving token:', error);
+  }
   console.log('token', token);
   const { pathname } = req.nextUrl;
 
