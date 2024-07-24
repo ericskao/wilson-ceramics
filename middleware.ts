@@ -10,14 +10,18 @@ export async function middleware(req: NextRequest) {
     req,
     secret: process.env.AUTH_SECRET || '',
     salt: 'authjs.session-token',
-    secureCookie: true,
+    cookieName:
+      process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.session-token'
+        : 'next-auth.session-token',
   });
+  console.log('token non try', token);
+
   try {
     const token = await getToken({
       req,
       salt: 'authjs.session-token',
       secret: process.env.AUTH_SECRET || '',
-      secureCookie: true,
     });
 
     console.log('Token retrieved:', token ? 'Yes' : 'No');
@@ -27,7 +31,6 @@ export async function middleware(req: NextRequest) {
   } catch (error) {
     console.error('Error retrieving token:', error);
   }
-  console.log('token', token);
   const { pathname } = req.nextUrl;
 
   // Check if the user is trying to access the /dashboard route
