@@ -7,7 +7,17 @@ export async function verifyOtp(code: string) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!user) return { status: 404, message: 'User not found' };
   if (code === process.env.NEXT_PUBLIC_MEMBER_CODE) {
+    if (user.role === 'dashboard_member' || user.role === 'service_role') {
+      return {
+        status: 400,
+        message:
+          user.role === 'service_role'
+            ? 'Cannot downgrade admin to member'
+            : 'Member already verified',
+      };
+    }
     try {
       const supabaseAdmin = createClientServiceRole(
         process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -30,6 +40,12 @@ export async function verifyOtp(code: string) {
     }
   } else if (code === process.env.NEXT_PUBLIC_ADMIN_CODE) {
     try {
+      if (user.role === 'service_role') {
+        return {
+          status: 400,
+          message: 'Admin already verified',
+        };
+      }
       const supabaseAdmin = createClientServiceRole(
         process.env.NEXT_PUBLIC_SUPABASE_URL || '',
         process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || '',
