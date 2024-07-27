@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Cog6ToothIcon,
   DocumentDuplicateIcon,
   HomeIcon,
   UserGroupIcon,
@@ -19,6 +20,11 @@ const links = [
     icon: DocumentDuplicateIcon,
   },
   { name: 'Customers', href: '/dashboard/customers', icon: UserGroupIcon },
+  {
+    name: 'Settings',
+    href: '/dashboard/settings',
+    icon: Cog6ToothIcon,
+  },
 ];
 
 export default function NavLinks() {
