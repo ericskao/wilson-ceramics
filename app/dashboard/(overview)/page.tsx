@@ -11,6 +11,7 @@ export default async function Page() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  console.log('user', user);
   const name =
     user?.user_metadata?.name ||
     user?.user_metadata?.full_name ||
@@ -24,6 +25,9 @@ export default async function Page() {
       </h1>
       <div>
         <div>Welcome {name}!</div>
+        <div>
+          <input type="" />
+        </div>
       </div>
       {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>
