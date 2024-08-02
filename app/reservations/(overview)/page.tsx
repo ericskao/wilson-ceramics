@@ -1,18 +1,21 @@
+import { fetchReservations } from '@/app/lib/reservationsData';
 import { lusitana } from '@/app/ui/fonts';
 import Reservations from '@/components/Reservations';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Dashboard',
+  title: 'Reservations',
 };
 
 export default async function Page() {
+  const reservations = await fetchReservations();
+  console.log('rez', reservations);
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Reservations
       </h1>
-      <Reservations />
+      <Reservations reservations={reservations} />
 
       {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>

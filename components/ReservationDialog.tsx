@@ -1,5 +1,5 @@
+import { ReservationType } from '@/app/lib/reservationsData';
 import { Button } from '@/app/ui/button';
-import { Dispatch } from 'react';
 import {
   Dialog,
   DialogClose,
@@ -12,20 +12,21 @@ import {
 
 const ReservationDialog = ({
   open,
-  setOpen,
-  wheel,
+  setReservationSelected,
+  reservation,
 }: {
   open: boolean;
-  setOpen: Dispatch<boolean>;
-  wheel: any;
+  setReservationSelected: (open: boolean) => void;
+  reservation: ReservationType | null;
 }) => {
-  const isOwner = wheel === 4;
+  if (!reservation) return null;
+  const isOwner = reservation.user_id === 4;
   return (
     <div>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={setReservationSelected}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Reserve Wheel {wheel}</DialogTitle>
+            <DialogTitle>Reserve Wheel {reservation.id}</DialogTitle>
             <DialogDescription>
               Friday, {new Date().toLocaleDateString()} at 4-6pm
             </DialogDescription>
