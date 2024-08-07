@@ -34,7 +34,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
       );
     } else if (duplicates.length > 0) {
       return NextResponse.json(
-        { error: 'Cannot make another reservation at this time' },
+        { error: 'You already have a reservation at this time!' },
         { status: 400 }
       );
     }
@@ -46,6 +46,9 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
           user?.user_metadata?.display_name || user?.user_metadata?.full_name,
       })
       .eq('id', reservationId);
+
+    // to-do return reservation success here to show in toast
+    console.log('data', data);
 
     if (!updateError) {
       return NextResponse.json({ status: 200, data });

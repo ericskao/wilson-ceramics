@@ -1,5 +1,10 @@
 import { ReservationType } from '@/app/lib/reservationsData';
 import { Button } from '@/app/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/24/outline';
 import { User } from '@supabase/supabase-js';
 import { format } from 'date-fns';
 import { TimeSlotEnum } from './Reservations';
@@ -24,6 +29,8 @@ const ReservationDialog = ({
   reservation: ReservationType | null;
   user: User | null;
 }) => {
+  const { toast } = useToast();
+
   if (!reservation) return null;
   const isOwner = reservation.user_id === user?.id;
 
@@ -47,18 +54,35 @@ const ReservationDialog = ({
       },
       body: JSON.stringify({ reservationId: reservation.id }),
     });
-    console.log('resp', response);
-    if (!response.ok) {
-      // If not ok, parse the error message from the response
-      const errorData = await response.json();
-
-      console.log('error data', errorData);
-      throw new Error(errorData.message || 'An error occurred');
+    const data = await response.json();
+    console.log('data', data);
+    if (data.ok) {
+      toast({
+        title: (
+          <div className="flex items-center gap-2">
+            <CheckCircleIcon width={24} height={24} />
+            Reservation Successful
+          </div>
+        ),
+        variant: 'success',
+        // description: errorData.message,
+      });
+    } else {
+      toast({
+        title: (
+          <div className="flex items-center gap-2">
+            <ExclamationCircleIcon width={24} height={24} />
+            Reservation Failed
+          </div>
+        ),
+        description: data.error,
+        variant: 'destructive',
+      });
     }
 
     // If response is ok, parse the JSON
-    const data = await response.json();
-    console.log('response data:', data);
+    // const data = await response.json();
+    // console.log('response data:', data);
 
     // pop toast for success
   };
@@ -72,7 +96,7 @@ const ReservationDialog = ({
             <DialogDescription>
               {format(reservation.date, 'PPPP')}
               {' from '}
-              <span className="font-semibold text-black">
+              <span className="font-semibold text-black text-lg">
                 {TimeSlotEnum[reservation.time_slot_id as 1 | 2 | 3]}
               </span>
             </DialogDescription>

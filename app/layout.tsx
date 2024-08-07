@@ -1,4 +1,5 @@
 import '@/app/ui/global.css';
+import { Toaster } from '@/components/ui/toaster';
 import { Metadata } from 'next';
 import { inter } from './ui/fonts';
 
@@ -18,7 +19,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>{children}</body>
+      <body className={`${inter.className}`}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

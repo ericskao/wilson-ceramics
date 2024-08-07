@@ -32,8 +32,12 @@ const config = {
           foreground: 'hsl(var(--secondary-foreground))',
         },
         destructive: {
-          DEFAULT: 'red',
+          DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
+        },
+        success: {
+          DEFAULT: '#166534',
+          foreground: '159 10% 5%',
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
