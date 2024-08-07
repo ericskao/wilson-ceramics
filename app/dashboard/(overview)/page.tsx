@@ -11,7 +11,6 @@ export default async function Page() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log('user', user);
   const name =
     user?.user_metadata?.name ||
     user?.user_metadata?.full_name ||

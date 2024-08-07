@@ -5,8 +5,9 @@ export type ReservationType = {
   guest_name: string | null;
   reserved_at: string;
   table_name: string;
-  user_id: number | null;
+  user_id: string | null;
   time_slot_id: number;
+  date: Date;
 };
 
 export async function fetchReservations() {
