@@ -4,12 +4,12 @@ import { NextRequest, NextResponse } from 'next/server';
 export const PUT = async (req: NextRequest, res: NextResponse) => {
   const supabase = createClient();
   try {
-    const { reservationId } = await req.json();
+    const { reservationId, status } = await req.json();
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    // need to handle admin input cases - if role is admin and inputText is passed along, use that info
+    // TODO need to handle admin input cases - if role is admin and inputText is passed along, use that info
 
     if (!user) {
       return NextResponse.json(
@@ -18,6 +18,27 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
       );
     }
 
+    if (status === 'canceled') {
+      console.log('in canceled', reservationId, user.id);
+      // find reservation and make sure it belongs to user
+      // TODO handle admin cancelation (won't have user_id)
+      const { data: reservation, error } = await supabase
+        .from('reservations')
+        .update({
+          user_id: null,
+          guest_name: null,
+        })
+        .eq('id', reservationId)
+        .eq('user_id', user.id)
+        .select('*')
+        .single();
+
+      if (!error) {
+        return NextResponse.json({ status: 201, data: reservation });
+      }
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    console.log('does this hit');
     // Call the custom SQL function to check for duplicate reservations
     const { data: duplicates, error: duplicateError } = await supabase.rpc(
       'check_duplicate_reservations',

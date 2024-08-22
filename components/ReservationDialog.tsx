@@ -44,7 +44,42 @@ const ReservationDialog = ({
     }
   };
 
-  const onRemoveReservationClick = async () => {};
+  const onRemoveReservationClick = async () => {
+    const response = await fetch('/api/reservation', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        reservationId: reservation.id,
+        status: 'canceled',
+      }),
+    });
+    const res = await response.json();
+    if (res.status === 201) {
+      toast({
+        title: (
+          <div className="flex items-center gap-2">
+            <CheckCircleIcon width={24} height={24} />
+            Reservation Removed
+          </div>
+        ),
+        variant: 'success',
+        // description: errorData.message,
+      });
+    } else {
+      toast({
+        title: (
+          <div className="flex items-center gap-2">
+            <ExclamationCircleIcon width={24} height={24} />
+            Reservation cancelation failed
+          </div>
+        ),
+        description: res.error,
+        variant: 'destructive',
+      });
+    }
+  };
 
   const onReserveClick = async () => {
     const response = await fetch('/api/reservation', {
@@ -54,9 +89,8 @@ const ReservationDialog = ({
       },
       body: JSON.stringify({ reservationId: reservation.id }),
     });
-    const data = await response.json();
-    console.log('data', data);
-    if (data.ok) {
+    const res = await response.json();
+    if (res.status === 200) {
       toast({
         title: (
           <div className="flex items-center gap-2">
@@ -75,16 +109,10 @@ const ReservationDialog = ({
             Reservation Failed
           </div>
         ),
-        description: data.error,
+        description: res.error,
         variant: 'destructive',
       });
     }
-
-    // If response is ok, parse the JSON
-    // const data = await response.json();
-    // console.log('response data:', data);
-
-    // pop toast for success
   };
 
   return (
