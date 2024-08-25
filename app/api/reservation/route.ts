@@ -59,6 +59,8 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         { status: 400 }
       );
     }
+
+    // TODO need to add reserved_at
     const { error: updateError, data } = await supabase
       .from('reservations')
       .update({
