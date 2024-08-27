@@ -37,6 +37,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
       }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
     // Call the custom SQL function to check for duplicate reservations
     const { data: duplicates, error: duplicateError } = await supabase.rpc(
       'check_duplicate_reservations',
@@ -67,23 +68,15 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
           user?.user_metadata?.display_name || user?.user_metadata?.full_name,
       })
       .eq('id', reservationId);
-
     // to-do return reservation success here to show in toast
-    console.log('data', data);
 
     if (!updateError) {
       return NextResponse.json({ status: 200, data });
     } else {
-      return NextResponse.json({
-        status: 400,
-        error: 'Could not update reservation',
-      });
+      throw Error('Could not update reservation');
     }
   } catch (error) {
     console.error('Error parsing request body:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    throw Error('Server Error');
   }
 };

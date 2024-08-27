@@ -3,6 +3,7 @@
 import useUser from '@/app/hooks/useUser';
 import useWeeklyReservations from '@/app/hooks/useWeeklyReservations';
 import { ReservationType } from '@/app/lib/reservationsData';
+import { Button } from '@/app/ui/button';
 import { format, parseISO } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
 import ReservationButton from './ReservationButton';
@@ -21,7 +22,7 @@ const Reservations = () => {
 
   const { user } = useUser();
   const { reservations, isFetching, error } = useWeeklyReservations({
-    offset: 0,
+    offset: weekOffset,
   });
 
   const reservationsByTimeSlotId = useMemo(() => {
@@ -60,35 +61,61 @@ const Reservations = () => {
   }
 
   return (
-    <div className="flex flex-col gap-y-12">
-      {Object.keys(reservationsByDate).map((date) => {
-        return (
-          <div>
-            <h2 className="text-xl py-8">{format(parseISO(date), 'PPPP')}</h2>
-            {Object.keys(reservationsByTimeSlotId).map((timeSlotId) => {
-              return (
-                <div key={timeSlotId}>
-                  <div>{timeSlotId}</div>
-                  <ul className="p-2 gap-3 flex flex-wrap">
-                    {reservationsByTimeSlotId[timeSlotId.toString()].map(
-                      (reservation) => (
-                        <li key={reservation.id}>
-                          <ReservationButton
-                            setWheel={handleReservationSelected}
-                            reservation={reservation}
-                            isOwner={reservation.user_id === user.id}
-                          />
-                        </li>
-                      )
-                    )}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-
+    <div>
+      <div className="flex flex-row">
+        <Button
+          variant="tertiary"
+          onClick={() => {
+            if (weekOffset > 0) {
+              setWeekOffset(weekOffset - 1);
+            }
+          }}
+        >
+          Previous
+        </Button>
+        <div className="flex flex-col gap-y-12 flex-1 min-w-[45%]">
+          {Object.keys(reservationsByDate).map((date) => {
+            return (
+              <div>
+                <h2 className="text-xl py-8">
+                  {format(parseISO(date), 'PPPP')}
+                </h2>
+                {Object.keys(reservationsByTimeSlotId).map((timeSlotId) => {
+                  return (
+                    <div key={timeSlotId}>
+                      <div>{timeSlotId}</div>
+                      <ul className="p-2 gap-3 flex flex-wrap">
+                        {reservationsByTimeSlotId[timeSlotId.toString()].map(
+                          (reservation) => (
+                            <li key={reservation.id}>
+                              <ReservationButton
+                                setWheel={handleReservationSelected}
+                                reservation={reservation}
+                                isOwner={reservation.user_id === user.id}
+                              />
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex-1 min-w-[45%] invisible">second col</div>
+        <Button
+          variant="tertiary"
+          onClick={() => {
+            if (weekOffset < 2) {
+              setWeekOffset(weekOffset + 1);
+            }
+          }}
+        >
+          Next
+        </Button>
+      </div>
       <ReservationDialog
         open={!!reservationSelected}
         setReservationSelected={setReservationSelected}
