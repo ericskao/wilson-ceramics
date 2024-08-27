@@ -7,7 +7,7 @@ export type ReservationType = {
   table_name: string;
   user_id: string | null;
   time_slot_id: number;
-  date: Date;
+  date: string;
 };
 
 interface FetchReservationsResponse {

@@ -1,23 +1,15 @@
+'use client';
+
 import { lusitana } from '@/app/ui/fonts';
-import Reservations from '@/components/Reservations';
-// import Reservations from '@/components/Reservations';
-import { Metadata } from 'next';
-import { Suspense } from 'react';
+import Reservations from '@/components/features/reservations/Reservations';
 
-export const metadata: Metadata = {
-  title: 'Reservations',
-};
-
-export default async function Page() {
+export default function Page() {
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Reservations
       </h1>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Reservations />
-      </Suspense>
-
+      <Reservations />
       {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>
           <CardWrapper />

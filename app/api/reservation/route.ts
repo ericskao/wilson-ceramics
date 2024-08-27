@@ -19,7 +19,6 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
     }
 
     if (status === 'canceled') {
-      console.log('in canceled', reservationId, user.id);
       // find reservation and make sure it belongs to user
       // TODO handle admin cancelation (won't have user_id)
       const { data: reservation, error } = await supabase
@@ -38,7 +37,6 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
       }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    console.log('does this hit');
     // Call the custom SQL function to check for duplicate reservations
     const { data: duplicates, error: duplicateError } = await supabase.rpc(
       'check_duplicate_reservations',

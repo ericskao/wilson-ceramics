@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from './ui/card';
+} from '../../ui/card';
 
 const ReservationCard = () => {
   const reserved = false;

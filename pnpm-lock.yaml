@@ -26,6 +26,9 @@ importers:
       '@tailwindcss/forms':
         specifier: ^0.5.7
         version: 0.5.7(tailwindcss@3.4.4)
+      '@tanstack/react-query':
+        specifier: ^5.52.2
+        version: 5.52.2(react@19.0.0-rc-f38c22b244-20240704)
       autoprefixer:
         specifier: 10.4.19
         version: 10.4.19(postcss@8.4.38)
@@ -606,6 +609,14 @@ packages:
     resolution: {integrity: sha512-QE7X69iQI+ZXwldE+rzasvbJiyV/ju1FGHH0Qn2W3FKbuYtqp8LKcy6iSw79fVUT5/Vvf+0XgLCeYVG+UV6hOw==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
+
+  '@tanstack/query-core@5.52.2':
+    resolution: {integrity: sha512-9vvbFecK4A0nDnrc/ks41e3UHONF1DAnGz8Tgbxkl59QcvKWmc0ewhYuIKRh8NC4ja5LTHT9EH16KHbn2AIYWA==}
+
+  '@tanstack/react-query@5.52.2':
+    resolution: {integrity: sha512-d4OwmobpP+6+SvuAxW1RzAY95Pv87Gu+0GjtErzFOUXo+n0FGcwxKvzhswCsXKxsgnAr3bU2eJ2u+GXQAutkCQ==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@types/bcrypt@5.0.2':
     resolution: {integrity: sha512-6atioO8Y75fNcbmj0G7UjI9lXN2pQ/IGJ2FWT4a/btd0Lk9lQalHLKhkgKVZ3r+spnmWUKfbMi1GEe9wyHQfNQ==}
@@ -2743,6 +2754,13 @@ snapshots:
     dependencies:
       mini-svg-data-uri: 1.4.4
       tailwindcss: 3.4.4
+
+  '@tanstack/query-core@5.52.2': {}
+
+  '@tanstack/react-query@5.52.2(react@19.0.0-rc-f38c22b244-20240704)':
+    dependencies:
+      '@tanstack/query-core': 5.52.2
+      react: 19.0.0-rc-f38c22b244-20240704
 
   '@types/bcrypt@5.0.2':
     dependencies:

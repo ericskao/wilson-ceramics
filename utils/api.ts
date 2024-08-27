@@ -1,34 +1,33 @@
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-export interface ResponseWithHeadersInterface {
-  headers: Headers;
-  data: unknown[];
-}
+type RequestOptions = {
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  headers?: Record<string, string>;
+  body?: any;
+};
 
-export async function api(
+export async function apiFetch<T>(
   route: string,
-  options: RequestInit = {}
-): Promise<unknown> {
-  try {
-    const response = await fetch(`${BASE_URL}${route}`, {
-      ...options,
-      headers: { 'Content-Type': 'application/json', ...options.headers },
-    });
+  options: RequestOptions = {}
+): Promise<T> {
+  const { method = 'GET', headers = {}, body } = options;
 
-    console.log('route', `${BASE_URL}${route}`);
-    console.log('response headers', response.headers);
-    if (response.ok) {
-      const jsonResponse = await response.json();
-      return jsonResponse;
-    }
-  } catch (error) {
-    console.error(`Error fetching from ${BASE_URL}${route}:`, error);
+  const response = await fetch(route, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
 
-    // handle error for ErrorDialog here
-    // return {
-    //   success: false,
-    //   error: error instanceof Error ? error.message : `Error fetching ${route}`,
-    //   status: 400,
-    // };
+  if (!response.ok) {
+    // Optionally handle specific HTTP errors here
+    const errorData = await response.json();
+    // TODO handle modal errors here
+    throw new Error(errorData.message || 'API request failed');
   }
+
+  // Parse and return the response data as JSON
+  return response.json();
 }
