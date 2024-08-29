@@ -11,7 +11,6 @@ export async function signOut() {
   if (error) {
     console.error('Error signing out:', error);
   } else {
-    console.log('signed out');
     revalidatePath('/', 'layout');
     redirect('/');
   }
@@ -25,7 +24,7 @@ export async function otp(formData: FormData) {
     options: {
       // set this to false if you do not want the user to be automatically signed up
       shouldCreateUser: true,
-      emailRedirectTo: 'http://localhost:3000/auth/callback?next=dashboard',
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`,
     },
   });
 }
@@ -52,13 +51,14 @@ export async function login(formData: FormData) {
 
 export async function google() {
   const supabase = createClient();
+  console.log('logging in via google');
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `https:${process.env.DOMAIN}/auth/callback?next=dashboard`,
+      redirectTo: `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`,
     },
   });
-
+  console.log('finshed login', data, data.url);
   if (data.url) {
     redirect(data.url); // use the redirect API for your server framework
   }
