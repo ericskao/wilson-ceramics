@@ -9,7 +9,7 @@ interface ErrorState {
 
 const useErrorStore = create((set) => ({
   errorMessage: null,
-  setError: (message) => set({ errorMessage: message }),
+  setError: (message: string | null) => set({ errorMessage: message }),
   clearError: () => set({ errorMessage: null }),
 }));
 
