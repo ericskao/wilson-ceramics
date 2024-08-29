@@ -15,14 +15,16 @@ const reserveMutation = async (reservationId: number) => {
 
 const useReserveMutation = ({
   onSuccessCallback,
+  weekOffset,
 }: {
   onSuccessCallback?: () => void;
+  weekOffset: number;
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   return useMutation<{ status: number }, Error, number>({
     mutationFn: (reservationId) => reserveMutation(reservationId),
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">
@@ -32,15 +34,16 @@ const useReserveMutation = ({
         ),
         variant: 'success',
       });
-      queryClient.invalidateQueries({ queryKey: ['reservations'] });
-      onSuccessCallback?.();
+      queryClient.invalidateQueries({
+        queryKey: ['reservations', { weekOffset }],
+      });
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">
             <ExclamationCircleIcon width={24} height={24} />
-            Reservation Failed
+            {error.message}
           </div>
         ),
         variant: 'destructive',

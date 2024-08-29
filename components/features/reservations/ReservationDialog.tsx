@@ -2,7 +2,7 @@ import useCancelMutation from '@/app/hooks/useCancelationMutation';
 import useReserveMutation from '@/app/hooks/useReserveMutation';
 import { ReservationType } from '@/app/lib/reservationsData';
 import { Button } from '@/app/ui/button';
-import { useToast } from '@/components/ui/use-toast';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { User } from '@supabase/supabase-js';
 import { format } from 'date-fns';
 import { Dispatch, SetStateAction } from 'react';
@@ -22,18 +22,22 @@ const ReservationDialog = ({
   setReservationSelected,
   reservation,
   user,
+  weekOffset,
 }: {
   open: boolean;
   setReservationSelected: Dispatch<SetStateAction<ReservationType | null>>;
   reservation: ReservationType | null;
   user: User | null;
+  weekOffset: number;
 }) => {
-  const { toast } = useToast();
-  const { mutate: reserve } = useReserveMutation({
+  // TODO should handle front end validation for reserving (ie cant reserve if already reserved on the same timeSlot)
+  const { mutate: reserve, isPending: isReserving } = useReserveMutation({
     onSuccessCallback: () => setReservationSelected(null),
+    weekOffset,
   });
-  const { mutate: cancel } = useCancelMutation({
+  const { mutate: cancel, isPending: isCanceling } = useCancelMutation({
     onSuccessCallback: () => setReservationSelected(null),
+    weekOffset,
   });
 
   if (!reservation) return null;
@@ -48,6 +52,12 @@ const ReservationDialog = ({
       return <p>No one has reserved this wheel yet.</p>;
     }
   };
+
+  const spinner = (
+    <div>
+      <ArrowPathIcon className="animate-spin" height={24} width={24} />
+    </div>
+  );
 
   return (
     <div>
@@ -75,12 +85,17 @@ const ReservationDialog = ({
                 onClick={() => cancel(reservation.id)}
                 type="submit"
                 variant="destructive"
+                disabled={isCanceling}
               >
-                Remove
+                {isCanceling ? spinner : 'Remove'}
               </Button>
             ) : (
-              <Button onClick={() => reserve(reservation.id)} type="submit">
-                Reserve
+              <Button
+                onClick={() => reserve(reservation.id)}
+                type="submit"
+                disabled={isReserving}
+              >
+                {isReserving ? spinner : 'Reserve'}
               </Button>
             )}
           </DialogFooter>

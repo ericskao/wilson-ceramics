@@ -15,15 +15,19 @@ const cancelMutation = async (reservationId: number) => {
 
 const useCancelMutation = ({
   onSuccessCallback,
+  weekOffset,
 }: {
   onSuccessCallback?: () => void;
+  weekOffset: number;
 }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   return useMutation<{ status: number }, Error, number>({
     mutationFn: (reservationId) => cancelMutation(reservationId),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['reservations'] });
+      queryClient.invalidateQueries({
+        queryKey: ['reservations', { weekOffset }],
+      });
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">

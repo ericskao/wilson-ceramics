@@ -13,7 +13,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'User not authenticated' },
+        { message: 'User not authenticated' },
         { status: 401 }
       );
     }
@@ -35,7 +35,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
       if (!error) {
         return NextResponse.json({ status: 201, data: reservation });
       }
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ message: error.message }, { status: 500 });
     }
 
     // Call the custom SQL function to check for duplicate reservations
@@ -49,12 +49,12 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
 
     if (duplicateError) {
       return NextResponse.json(
-        { error: duplicateError.message },
+        { message: duplicateError.message },
         { status: 500 }
       );
     } else if (duplicates.length > 0) {
       return NextResponse.json(
-        { error: 'You already have a reservation at this time!' },
+        { message: 'You already have a reservation at this time!' },
         { status: 400 }
       );
     }
