@@ -2,7 +2,7 @@ import clsx from 'clsx';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'destructive' | 'tertiary';
+  variant?: 'primary' | 'secondary' | 'destructive' | 'tertiary' | 'ghost';
 }
 
 export function Button({
@@ -25,6 +25,7 @@ export function Button({
             variant === 'destructive',
           'bg-white ring-offset-background border border-input bg-background hover:bg-accent hover:text-accent-foreground':
             variant === 'tertiary',
+          'bg-transparent': variant === 'ghost',
         },
 
         className

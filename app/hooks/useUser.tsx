@@ -1,6 +1,10 @@
 import { User } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 
+export enum UserRoles {
+  'ADMIN' = 'service_role',
+}
+
 const useUser = () => {
   const [user, setUser] = useState<User>({} as User);
   const [loading, setLoading] = useState<boolean>(true);

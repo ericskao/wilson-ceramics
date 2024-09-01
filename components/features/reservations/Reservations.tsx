@@ -1,6 +1,6 @@
 'use client';
 
-import useUser from '@/app/hooks/useUser';
+import useUser, { UserRoles } from '@/app/hooks/useUser';
 import useWeeklyReservations from '@/app/hooks/useWeeklyReservations';
 import { ReservationType } from '@/app/lib/reservationsData';
 import { Button } from '@/app/ui/button';
@@ -25,6 +25,8 @@ const Reservations = () => {
   const { reservations, isFetching, error } = useWeeklyReservations({
     offset: weekOffset,
   });
+  const isAdmin = user?.role === UserRoles['ADMIN'];
+  console.log('user', user);
 
   const reservationsByTimeSlotId = useMemo(() => {
     return reservations.reduce((acc, reservation) => {
@@ -101,7 +103,7 @@ const Reservations = () => {
           </Button>
         </div>
       </div>
-      <div className="flex flex-row">
+      <div className="flex flex-col sm:flex-row">
         <div className="flex flex-col gap-y-12 flex-1 min-w-[45%]">
           {Object.keys(reservationsByDate).map((date) => {
             return (
@@ -125,6 +127,7 @@ const Reservations = () => {
                                   setWheel={handleReservationSelected}
                                   reservation={reservation}
                                   isOwner={reservation.user_id === user.id}
+                                  isAdmin={isAdmin}
                                 />
                               </li>
                             ))}

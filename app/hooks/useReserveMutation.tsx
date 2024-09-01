@@ -6,10 +6,10 @@ import {
 } from '@heroicons/react/24/outline';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-const reserveMutation = async (reservationId: number) => {
+const reserveMutation = async (reservationId: number, guestName?: string) => {
   return apiFetch<{ status: number }>('/api/reservation', {
     method: 'PUT',
-    body: { reservationId },
+    body: { reservationId, guestName },
   });
 };
 
@@ -22,9 +22,19 @@ const useReserveMutation = ({
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  return useMutation<{ status: number }, Error, number>({
-    mutationFn: (reservationId) => reserveMutation(reservationId),
-    onSuccess: () => {
+  return useMutation<
+    { status: number },
+    Error,
+    { reservationId: number; guestName?: string }
+  >({
+    mutationFn: ({
+      reservationId,
+      guestName,
+    }: {
+      reservationId: number;
+      guestName?: string;
+    }) => reserveMutation(reservationId, guestName),
+    onSuccess: (data) => {
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">
@@ -34,6 +44,7 @@ const useReserveMutation = ({
         ),
         variant: 'success',
       });
+      onSuccessCallback?.();
       queryClient.invalidateQueries({
         queryKey: ['reservations', { weekOffset }],
       });
