@@ -1,6 +1,6 @@
-import useCancelMutation from '@/app/hooks/useCancelationMutation';
-import useReserveMutation from '@/app/hooks/useReserveMutation';
-import { UserRoles } from '@/app/hooks/useUser';
+import useCancelMutation from '@/app/hooks/reservations/useCancelationMutation';
+import useReserveMutation from '@/app/hooks/reservations/useReserveMutation';
+import { UserRoles } from '@/app/hooks/users/useUser';
 import { ReservationType } from '@/app/lib/reservationsData';
 import { Button } from '@/app/ui/button';
 import {
@@ -55,16 +55,27 @@ const ReservationDialog = ({
     },
     weekOffset,
   });
-  const isAdmin = user?.role === UserRoles.ADMIN;
 
   if (!reservation) return null;
+
   const isOwner = reservation.user_id === user?.id;
+  const isAdmin = user?.role === UserRoles.ADMIN;
+  const adminReservation = !reservation.user_id && reservation.guest_name;
 
   const reservationCopy = () => {
     if (isOwner) {
       return <p>You have reserved this wheel.</p>;
     } else if (reservation.user_id || reservation.guest_name) {
-      return <p>{reservation.guest_name} has reserved this wheel.</p>;
+      return (
+        <p>
+          {reservation.guest_name} has reserved this wheel.{' '}
+          {adminReservation && (
+            <div className="text-xs italic text-secondary-foreground">
+              - This reservation was manually set by an admin
+            </div>
+          )}
+        </p>
+      );
     } else {
       return <p>No one has reserved this wheel yet.</p>;
     }
@@ -81,7 +92,7 @@ const ReservationDialog = ({
       <Dialog open={open} onOpenChange={() => setReservationSelected(null)}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Reserve Wheel {reservation.table_name}</DialogTitle>
+            <DialogTitle>Wheel {reservation.table_name}</DialogTitle>
             <DialogDescription>
               {format(reservation.date, 'PPPP')}
               {' from '}
@@ -106,8 +117,8 @@ const ReservationDialog = ({
                   ) : (
                     <div className="flex items-center mb-2">
                       <Input
-                        className="w-full h-8"
-                        placeholder="Guest Name"
+                        className="w-full h-10"
+                        placeholder="Set guest name"
                         onChange={(e) => {
                           setGuestName(e.currentTarget.value);
                         }}

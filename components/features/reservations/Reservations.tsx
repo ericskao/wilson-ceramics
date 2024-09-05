@@ -1,7 +1,7 @@
 'use client';
 
-import useUser, { UserRoles } from '@/app/hooks/useUser';
-import useWeeklyReservations from '@/app/hooks/useWeeklyReservations';
+import useWeeklyReservations from '@/app/hooks/reservations/useWeeklyReservations';
+import useUser, { UserRoles } from '@/app/hooks/users/useUser';
 import { ReservationType } from '@/app/lib/reservationsData';
 import { Button } from '@/app/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -9,11 +9,12 @@ import { add, format, parseISO, startOfWeek } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
 import ReservationButton from './ReservationButton';
 import ReservationDialog from './ReservationDialog';
+import Waitlist from './Waitlist';
 
 export const TimeSlotEnum = {
-  1: '4-6pm',
-  2: '6-8pm',
-  3: '8-10pm',
+  '1': '4-6pm',
+  '2': '6-8pm',
+  '3': '8-10pm',
 };
 
 const Reservations = () => {
@@ -22,19 +23,18 @@ const Reservations = () => {
     useState<ReservationType | null>(null);
 
   const { user } = useUser();
-  const { reservations, isFetching, error } = useWeeklyReservations({
+  const { reservations, isFetching } = useWeeklyReservations({
     offset: weekOffset,
   });
+
   const isAdmin = user?.role === UserRoles['ADMIN'];
-  console.log('user', user);
 
   const reservationsByTimeSlotId = useMemo(() => {
     return reservations.reduce((acc, reservation) => {
-      const timeKey = TimeSlotEnum[reservation.time_slot_id as 1 | 2 | 3];
-      if (!acc[timeKey]) {
-        acc[timeKey] = [];
+      if (!acc[reservation.time_slot_id]) {
+        acc[reservation.time_slot_id] = [];
       }
-      acc[timeKey].push(reservation);
+      acc[reservation.time_slot_id].push(reservation);
       return acc;
     }, {} as { [key: string]: ReservationType[] });
   }, [reservations]);
@@ -113,15 +113,19 @@ const Reservations = () => {
                 </h2>
                 <div className="flex flex-col gap-y-6">
                   {Object.keys(reservationsByTimeSlotId).map((timeSlotId) => {
+                    const showWaitlist = true;
                     return (
                       <div key={timeSlotId}>
                         <div className="text-lg font-semibold">
-                          {timeSlotId}
+                          {TimeSlotEnum[timeSlotId as '1' | '2' | '3']}
                         </div>
                         <ul className="p-2 gap-3 flex flex-wrap">
-                          {reservationsByTimeSlotId[timeSlotId.toString()]
-                            .toSorted((a, b) => a.id - b.id)
-                            .map((reservation) => (
+                          {reservationsByTimeSlotId[timeSlotId]
+                            .toSorted(
+                              (a: ReservationType, b: ReservationType) =>
+                                a.id - b.id
+                            )
+                            .map((reservation: ReservationType) => (
                               <li key={reservation.id}>
                                 <ReservationButton
                                   setWheel={handleReservationSelected}
@@ -132,6 +136,14 @@ const Reservations = () => {
                               </li>
                             ))}
                         </ul>
+
+                        {showWaitlist && (
+                          <Waitlist
+                            timeSlotId={timeSlotId}
+                            weekOffset={weekOffset}
+                            date={date}
+                          />
+                        )}
                       </div>
                     );
                   })}

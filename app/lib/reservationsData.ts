@@ -10,6 +10,13 @@ export type ReservationType = {
   date: string;
 };
 
+export type WaitlistType = {
+  id: number;
+  date: string;
+  user_id: string;
+  time_slot_id: number;
+};
+
 interface FetchReservationsResponse {
   status: 'success' | 'error';
   data?: any[];

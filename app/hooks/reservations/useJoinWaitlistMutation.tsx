@@ -6,14 +6,20 @@ import {
 } from '@heroicons/react/24/outline';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-const reserveMutation = async (reservationId: number, guestName?: string) => {
-  return apiFetch<{ status: number }>('/api/reservation', {
-    method: 'PUT',
-    body: { reservationId, guestName },
+const joinWaitlistMutation = async ({
+  timeSlotId,
+  date,
+}: {
+  timeSlotId: number;
+  date: string;
+}) => {
+  return apiFetch<{ status: number }>('/api/waitlist', {
+    method: 'POST',
+    body: { timeSlotId, date },
   });
 };
 
-const useReserveMutation = ({
+const useJoinWaitlistMutation = ({
   onSuccessCallback,
   weekOffset,
 }: {
@@ -25,28 +31,23 @@ const useReserveMutation = ({
   return useMutation<
     { status: number },
     Error,
-    { reservationId: number; guestName?: string }
+    { timeSlotId: number; date: string }
   >({
-    mutationFn: ({
-      reservationId,
-      guestName,
-    }: {
-      reservationId: number;
-      guestName?: string;
-    }) => reserveMutation(reservationId, guestName),
+    mutationFn: ({ timeSlotId, date }: { timeSlotId: number; date: string }) =>
+      joinWaitlistMutation({ timeSlotId, date }),
     onSuccess: (data) => {
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">
             <CheckCircleIcon width={24} height={24} />
-            Reservation Successful
+            Joined Waitlist!
           </div>
         ),
         variant: 'success',
       });
       onSuccessCallback?.();
       queryClient.invalidateQueries({
-        queryKey: ['reservations', { weekOffset }],
+        queryKey: ['waitlists', { weekOffset }],
       });
     },
     onError: (error) => {
@@ -63,4 +64,4 @@ const useReserveMutation = ({
   });
 };
 
-export default useReserveMutation;
+export default useJoinWaitlistMutation;

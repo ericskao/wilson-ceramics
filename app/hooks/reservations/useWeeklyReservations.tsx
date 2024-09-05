@@ -2,7 +2,7 @@
 
 import { apiFetch } from '@/utils/api';
 import { useQuery } from '@tanstack/react-query';
-import { ReservationType } from '../lib/reservationsData';
+import { ReservationType, WaitlistType } from '../lib/reservationsData';
 
 const fetchReservations = async (
   offset: number
@@ -12,6 +12,14 @@ const fetchReservations = async (
   );
   const reservations = await response;
   return reservations.data;
+};
+
+const fetchWaitlists = async (offset: number): Promise<WaitlistType[]> => {
+  const response = await apiFetch<{ data: WaitlistType[] }>(
+    `/api/waitlists?offset=${offset}`
+  );
+  const waitlists = await response;
+  return waitlists.data;
 };
 
 const useWeeklyReservations = ({ offset = 0 }: { offset: number }) => {
@@ -25,7 +33,19 @@ const useWeeklyReservations = ({ offset = 0 }: { offset: number }) => {
     staleTime: 120000,
   });
 
-  return { reservations: reservations, error, isFetching };
+  const { data: waitlists = [], error: waitlistError } = useQuery({
+    queryKey: ['waitlists', { weekOffset: offset }],
+    queryFn: () => fetchWaitlists(offset),
+    staleTime: 120000,
+  });
+
+  return {
+    reservations: reservations,
+    error,
+    isFetching,
+    waitlists,
+    waitlistError,
+  };
 };
 
 export default useWeeklyReservations;
