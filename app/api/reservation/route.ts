@@ -1,6 +1,20 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
+const getErrorMessage = (error: any): { message: string; status: number } => {
+  if (error?.code === '23505') {
+    return {
+      message: 'You already have a reservation at this date and time!',
+      status: 409, // Conflict
+    };
+  }
+  // Default error message
+  return {
+    message: 'An unexpected reservation error occurred',
+    status: 500, // Internal Server Error
+  };
+};
+
 export const PUT = async (req: NextRequest, res: NextResponse) => {
   const supabase = createClient();
   try {
@@ -32,10 +46,14 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
 
       const { data: reservation, error } = await query.select('*').single();
 
-      if (!error) {
-        return NextResponse.json({ status: 201, data: reservation });
+      if (error) {
+        console.error('Error canceling reservation', error);
+        return NextResponse.json(
+          { message: 'Error canceling reservation' },
+          { status: 500 }
+        );
       }
-      return NextResponse.json({ message: error.message }, { status: 500 });
+      return NextResponse.json({ status: 201, data: reservation });
     }
 
     if (isAdmin && guestName) {
@@ -46,32 +64,15 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         })
         .eq('id', reservationId);
       if (guestError) {
-        throw Error('Could not update reservation');
+        console.error('Error adding guest to reservation', guestError);
+        return NextResponse.json(
+          { message: 'Could not add guest to reservation' },
+          { status: 500 }
+        );
       } else {
         return NextResponse.json({ status: 200, data });
       }
     } else {
-      // Call the custom SQL function to check for duplicate reservations
-      const { data: duplicates, error: duplicateError } = await supabase.rpc(
-        'check_duplicate_reservations',
-        {
-          reservation_id: reservationId,
-          user_id: user.id,
-        }
-      );
-
-      if (duplicateError) {
-        return NextResponse.json(
-          { message: duplicateError.message },
-          { status: 500 }
-        );
-      } else if (duplicates.length > 0) {
-        return NextResponse.json(
-          { message: 'You already have a reservation at this time!' },
-          { status: 400 }
-        );
-      }
-
       const { error: updateError, data } = await supabase
         .from('reservations')
         .update({
@@ -80,14 +81,17 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
             user?.user_metadata?.display_name || user?.user_metadata?.full_name,
         })
         .eq('id', reservationId);
-      if (!updateError) {
-        return NextResponse.json({ status: 200, data });
-      } else {
-        throw Error('Could not update reservation');
+
+      if (updateError) {
+        console.error('Error updating reservation', updateError);
+        const { message, status } = getErrorMessage(updateError);
+        return NextResponse.json({ message }, { status });
       }
+      return NextResponse.json({ status: 200, data });
     }
   } catch (error) {
-    console.error('Error parsing request body:', error);
-    throw Error('Server Error');
+    console.error('Unexpected error:', error);
+    const { message } = getErrorMessage(error);
+    return NextResponse.json({ message }, { status: 500 });
   }
 };

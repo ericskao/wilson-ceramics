@@ -30,7 +30,10 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error(error);
-      return NextResponse.json({ status: 400, message: `${error}` });
+      return NextResponse.json({
+        status: 400,
+        message: 'Failed to get reservations',
+      });
     } else {
       return NextResponse.json({ data, status: 200 });
     }

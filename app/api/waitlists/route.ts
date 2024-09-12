@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
       start_date: startDate,
       end_date: endDate,
     });
-    console.log('data', data, 'error', error);
 
     if (error) {
       console.error(error);

@@ -10,7 +10,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
-import { ArrowPathIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import Spinner from '@/components/ui/spinner';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { User } from '@supabase/supabase-js';
 import { format } from 'date-fns';
 import { Dispatch, SetStateAction, useState } from 'react';
@@ -81,12 +82,6 @@ const ReservationDialog = ({
     }
   };
 
-  const spinner = (
-    <div>
-      <ArrowPathIcon className="animate-spin" height={24} width={24} />
-    </div>
-  );
-
   return (
     <div>
       <Dialog open={open} onOpenChange={() => setReservationSelected(null)}>
@@ -151,7 +146,7 @@ const ReservationDialog = ({
                 variant="destructive"
                 disabled={isCanceling}
               >
-                {isCanceling ? spinner : 'Remove'}
+                {isCanceling ? <Spinner /> : 'Remove'}
               </Button>
             ) : (
               <Button
@@ -169,7 +164,7 @@ const ReservationDialog = ({
                   (!reservation.user_id && !!reservation.guest_name)
                 }
               >
-                {isReserving ? spinner : 'Reserve'}
+                {isReserving ? <Spinner /> : 'Reserve'}
               </Button>
             )}
           </DialogFooter>

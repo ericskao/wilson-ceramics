@@ -89,7 +89,7 @@ const Reservations = () => {
             'PPP'
           )}
         </div>
-        <div className="">
+        <div>
           <Button
             disabled={weekOffset === 2}
             variant="tertiary"
@@ -108,10 +108,10 @@ const Reservations = () => {
           {Object.keys(reservationsByDate).map((date) => {
             return (
               <div key={date}>
-                <h2 className="text-lg py-8">
+                <h2 className="text-lg py-8 font-medium">
                   {format(parseISO(date), 'PPPP')}
                 </h2>
-                <div className="flex flex-col gap-y-6">
+                <div className="flex flex-col gap-y-12">
                   {Object.keys(reservationsByTimeSlotId).map((timeSlotId) => {
                     const showWaitlist = true;
                     return (
@@ -119,31 +119,32 @@ const Reservations = () => {
                         <div className="text-lg font-semibold">
                           {TimeSlotEnum[timeSlotId as '1' | '2' | '3']}
                         </div>
-                        <ul className="p-2 gap-3 flex flex-wrap">
-                          {reservationsByTimeSlotId[timeSlotId]
-                            .toSorted(
-                              (a: ReservationType, b: ReservationType) =>
-                                a.id - b.id
-                            )
-                            .map((reservation: ReservationType) => (
-                              <li key={reservation.id}>
-                                <ReservationButton
-                                  setWheel={handleReservationSelected}
-                                  reservation={reservation}
-                                  isOwner={reservation.user_id === user.id}
-                                  isAdmin={isAdmin}
-                                />
-                              </li>
-                            ))}
-                        </ul>
-
-                        {showWaitlist && (
-                          <Waitlist
-                            timeSlotId={timeSlotId}
-                            weekOffset={weekOffset}
-                            date={date}
-                          />
-                        )}
+                        <div className="px-3 pt-2">
+                          <ul className="p-2 gap-3 flex flex-wrap">
+                            {reservationsByTimeSlotId[timeSlotId]
+                              .toSorted(
+                                (a: ReservationType, b: ReservationType) =>
+                                  a.id - b.id
+                              )
+                              .map((reservation: ReservationType) => (
+                                <li key={reservation.id}>
+                                  <ReservationButton
+                                    setWheel={handleReservationSelected}
+                                    reservation={reservation}
+                                    isOwner={reservation.user_id === user.id}
+                                    isAdmin={isAdmin}
+                                  />
+                                </li>
+                              ))}
+                          </ul>
+                          {showWaitlist && (
+                            <Waitlist
+                              timeSlotId={timeSlotId}
+                              weekOffset={weekOffset}
+                              date={date}
+                            />
+                          )}
+                        </div>
                       </div>
                     );
                   })}

@@ -41,6 +41,7 @@ const useReserveMutation = ({
       guestName?: string;
     }) => reserveMutation({ reservationId, guestName }),
     onSuccess: (data) => {
+      console.log('success data', data);
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">
@@ -56,6 +57,7 @@ const useReserveMutation = ({
       });
     },
     onError: (error) => {
+      console.log('error', error);
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">
