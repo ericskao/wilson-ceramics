@@ -53,6 +53,53 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
           { status: 500 }
         );
       }
+      const { id, date, time_slot_id } = reservation;
+      // reservation cancelation successful check to see if there is anyone on waitlist
+      const { data: waitlistEntry, error: waitlistError } = await supabase
+        .from('waitlists')
+        .select('*, profiles(full_name)')
+        .eq('date', date)
+        .eq('time_slot_id', time_slot_id)
+        .order('created_at', { ascending: true })
+        .limit(1);
+
+      if (waitlistError) {
+        console.error('Error getting waitlist entry', waitlistError);
+      } else if (waitlistEntry?.[0]) {
+        // there is someone on the waitlist
+        const {
+          id: waitlistId,
+          profiles: { full_name },
+          user_id,
+        } = waitlistEntry[0];
+
+        console.log('entry', waitlistEntry[0]);
+
+        // add waitlisted user to reservation
+        const { data, error } = await supabase
+          .from('reservations')
+          .update({
+            user_id: user_id,
+            guest_name: full_name,
+          })
+          .eq('id', id);
+        // TODO Send email to new user from waitlist who is added to reservation
+
+        if (error) {
+          console.error(error, 'Error trying to add from waitlist');
+        } else {
+          // take user off waitlist
+          const { data, error } = await supabase
+            .from('waitlists')
+            .delete()
+            .eq('id', waitlistId);
+
+          if (error) {
+            console.error('error removing user from waitlist');
+          }
+        }
+      }
+
       return NextResponse.json({ status: 201, data: reservation });
     }
 
@@ -73,12 +120,12 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         return NextResponse.json({ status: 200, data });
       }
     } else {
+      // TODO use join with public profiles data instead of auth
       const { error: updateError, data } = await supabase
         .from('reservations')
         .update({
           user_id: user.id,
-          guest_name:
-            user?.user_metadata?.display_name || user?.user_metadata?.full_name,
+          guest_name: user.user_metadata?.full_name,
         })
         .eq('id', reservationId);
 

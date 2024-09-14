@@ -32,6 +32,7 @@ export async function verifyOtp(code: string) {
           role: 'dashboard_member',
         }
       );
+
       if (error) {
         throw error;
       }
@@ -47,17 +48,20 @@ export async function verifyOtp(code: string) {
           message: 'Admin already verified',
         };
       }
+
       const supabaseAdmin = createClientServiceRole(
         process.env.NEXT_PUBLIC_SUPABASE_URL || '',
         process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || '',
         { auth: { persistSession: false } }
       );
+
       const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
         user?.id || '',
         {
           role: 'service_role',
         }
       );
+
       if (error) {
         throw error;
       }

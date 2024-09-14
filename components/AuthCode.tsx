@@ -15,9 +15,7 @@ const AuthCode = () => {
     if (code.length === 4) {
       const handleSubmit = async () => {
         try {
-          const response = await verifyOtp(code);
-          setCode('');
-          console.log('response is', response);
+          verifyOtp(code).then(() => setCode(''));
         } catch (error) {
           console.log(error);
         }

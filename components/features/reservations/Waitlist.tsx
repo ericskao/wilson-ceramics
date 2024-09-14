@@ -38,7 +38,7 @@ const Waitlist = ({
       waitlist.date === date && waitlist.time_slot_id == Number(timeSlotId)
   );
   const waitlistPosition = matchingWaitlistRecords.findIndex(
-    (record) => record.user_id === user.id
+    (record) => record.user.id === user.id
   );
 
   return (
@@ -46,8 +46,8 @@ const Waitlist = ({
       <span className="font-medium">Waitlist</span>
       <ul className="flex gap-x-1">
         {matchingWaitlistRecords.map((waitlistItem) => {
-          const { picture, full_name, name } = waitlistItem.raw_user_meta_data;
-          const displayName = full_name || name || 'User';
+          console.log('waitlistItem', waitlistItem);
+          const { picture, full_name: fullName, email } = waitlistItem.user;
           return (
             <li key={waitlistItem.user_id}>
               <Tooltip>
@@ -55,15 +55,15 @@ const Waitlist = ({
                   <Avatar>
                     <AvatarImage src={picture} />
                     <AvatarFallback>
-                      {displayName
+                      {fullName
                         .split(' ')
-                        .map((name: string[]) => name[0])
+                        .map((name: string) => name[0])
                         .join('')}
                     </AvatarFallback>
                   </Avatar>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{displayName}</p>
+                  <p>{fullName}</p>
                 </TooltipContent>
               </Tooltip>
             </li>
@@ -75,8 +75,7 @@ const Waitlist = ({
           <Button
             onClick={() => {
               leaveWaitlist({
-                waitlistId:
-                  matchingWaitlistRecords[waitlistPosition].waitlist_id,
+                waitlistId: matchingWaitlistRecords[waitlistPosition].id,
               });
             }}
             className="mt-4"

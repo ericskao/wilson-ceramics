@@ -22,12 +22,14 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       .eq('time_slot_id', timeSlotId)
       .eq('date', date)
       .eq('user_id', user.id);
+
     const reservationExists = conflictData?.length ?? 0 > 0;
+
     if (reservationExists) {
       return NextResponse.json(
         {
           message:
-            'Failed to join waitlist, you already have a reservation for this time!',
+            'Unable to join waitlist- you already have a reservation for this time!',
         },
         { status: 409 }
       );

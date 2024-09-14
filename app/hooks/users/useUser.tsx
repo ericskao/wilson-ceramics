@@ -6,22 +6,23 @@ export enum UserRoles {
   'ADMIN' = 'service_role',
 }
 
-const fetchUser = async (): Promise<User> => {
-  return await apiFetch<User>('/api/user');
+const fetchUser = async (): Promise<User | null> => {
+  const response = await apiFetch<User | null>('/api/user');
+  return response;
 };
 
 const useUser = () => {
-  const { data: user, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['user'],
     queryFn: () => fetchUser(),
   });
 
   const name =
-    user?.user_metadata?.name ||
-    user?.user_metadata?.full_name ||
-    user?.user_metadata?.email;
+    data?.user_metadata?.name ||
+    data?.user_metadata?.full_name ||
+    data?.user_metadata?.email;
 
-  return { user, isLoading, name };
+  return { user: data || ({} as User), isLoading, name };
 };
 
 export default useUser;

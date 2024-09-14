@@ -15,10 +15,11 @@ export type WaitlistType = {
   date: string;
   user_id: string;
   time_slot_id: number;
-  raw_user_meta_data: {
+  user: {
     picture: string;
+    email: string;
     full_name: string;
-    name: string;
+    id: string;
   };
 };
 

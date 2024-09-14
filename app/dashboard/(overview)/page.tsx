@@ -24,15 +24,6 @@ export default async function Page() {
       </h1>
       <div>
         <div>Welcome {name}!</div>
-        <div>
-          <input
-            className="ring-offset-background border-input border placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-10 px-3 py-2 rounded-md"
-            placeholder="name@example.com"
-            name="email"
-            type="email"
-            required
-          />
-        </div>
       </div>
       {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>
