@@ -28,6 +28,7 @@ export async function apiFetch<T>(
     throw new Error(errorData.message || 'API request failed');
   }
 
+  console.log('RESPONSE', response);
   // Parse and return the response data as JSON
   return response.json();
 }

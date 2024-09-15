@@ -1,3 +1,4 @@
+import { sendEmail } from '@/utils/sendEmail';
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -46,6 +47,8 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
 
       const { data: reservation, error } = await query.select('*').single();
 
+      console.log('reservation', reservation);
+
       if (error) {
         console.error('Error canceling reservation', error);
         return NextResponse.json(
@@ -57,7 +60,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
       // reservation cancelation successful check to see if there is anyone on waitlist
       const { data: waitlistEntry, error: waitlistError } = await supabase
         .from('waitlists')
-        .select('*, profiles(full_name)')
+        .select('*, profiles(full_name, email)')
         .eq('date', date)
         .eq('time_slot_id', time_slot_id)
         .order('created_at', { ascending: true })
@@ -69,11 +72,9 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         // there is someone on the waitlist
         const {
           id: waitlistId,
-          profiles: { full_name },
+          profiles: { full_name, email },
           user_id,
         } = waitlistEntry[0];
-
-        console.log('entry', waitlistEntry[0]);
 
         // add waitlisted user to reservation
         const { data, error } = await supabase
@@ -84,9 +85,13 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
           })
           .eq('id', id);
         // TODO Send email to new user from waitlist who is added to reservation
+        sendEmail('eko1125@gmail.com', 'hi there', '<p>this is html</p>');
 
         if (error) {
-          console.error(error, 'Error trying to add from waitlist');
+          console.error(
+            error,
+            `Error trying to add waitlisted user ${user_id} to reservation ${id}`
+          );
         } else {
           // take user off waitlist
           const { data, error } = await supabase
@@ -95,7 +100,9 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
             .eq('id', waitlistId);
 
           if (error) {
-            console.error('error removing user from waitlist');
+            console.error(
+              `error removing ${user_id} from waitlist ${waitlistId}`
+            );
           }
         }
       }
@@ -120,7 +127,6 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
         return NextResponse.json({ status: 200, data });
       }
     } else {
-      // TODO use join with public profiles data instead of auth
       const { error: updateError, data } = await supabase
         .from('reservations')
         .update({

@@ -25,9 +25,14 @@ const useCancelMutation = ({
   return useMutation<{ status: number }, Error, number>({
     mutationFn: (reservationId) => cancelMutation(reservationId),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['reservations', { weekOffset }],
-      });
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['reservations', { weekOffset }],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['waitlists', { weekOffset }],
+        }),
+      ]);
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">
