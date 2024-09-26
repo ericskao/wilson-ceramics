@@ -1,7 +1,7 @@
-import useJoinWaitlistMutation from '@/app/hooks/reservations/useJoinWaitlistMutation';
-import useLeaveWaitlistMutation from '@/app/hooks/reservations/useLeaveWaitlist';
-import useWeeklyReservations from '@/app/hooks/reservations/useWeeklyReservations';
+import useJoinWaitlistMutation from '@/app/hooks/mutations/reservations/useJoinWaitlistMutation';
+import useLeaveWaitlistMutation from '@/app/hooks/mutations/reservations/useLeaveWaitlist';
 import useUser from '@/app/hooks/users/useUser';
+import useWeeklyReservations from '@/app/hooks/useWeeklyReservations';
 import { Button } from '@/app/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Spinner from '@/components/ui/spinner';
@@ -46,7 +46,6 @@ const Waitlist = ({
       <span className="font-medium">Waitlist</span>
       <ul className="flex gap-x-1">
         {matchingWaitlistRecords.map((waitlistItem) => {
-          console.log('waitlistItem', waitlistItem);
           const { picture, full_name: fullName, email } = waitlistItem.user;
           return (
             <li key={waitlistItem.user_id}>

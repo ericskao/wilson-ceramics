@@ -1,3 +1,4 @@
+import { pastCutOffTime } from '@/utils/pastCutOffTime';
 import { sendEmail } from '@/utils/sendEmail';
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
@@ -32,6 +33,9 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
     }
     const isAdmin = user.role === 'service_role';
 
+    // TODO don't allow any actions after 5:45 on day of, but ok for following days
+    const isAfterCutOffTime = pastCutOffTime();
+
     if (status === 'canceled') {
       let query = supabase
         .from('reservations')
@@ -46,8 +50,6 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
       }
 
       const { data: reservation, error } = await query.select('*').single();
-
-      console.log('reservation', reservation);
 
       if (error) {
         console.error('Error canceling reservation', error);
@@ -84,7 +86,7 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
             guest_name: full_name,
           })
           .eq('id', id);
-        // TODO Send email to new user from waitlist who is added to reservation
+        // TODO Edit email with details
         sendEmail('eko1125@gmail.com', 'hi there', '<p>this is html</p>');
 
         if (error) {

@@ -9,18 +9,22 @@ const ReservationButton = ({
   isOwner,
   reservation,
   isAdmin,
+  pastCutoff,
 }: {
   reservation: ReservationType;
   setWheel: (dialog: any) => void;
   isOwner?: boolean;
   isAdmin: boolean;
+  pastCutoff: boolean;
 }) => {
   const { user_id, table_name, id } = reservation;
   const onButtonClick = () => {
     setWheel(reservation);
   };
+
   const isDisabled =
-    !isAdmin && !!user_id && !!reservation.guest_name && !isOwner;
+    !isAdmin &&
+    (pastCutoff || (!!user_id && !!reservation.guest_name && !isOwner));
 
   return (
     <Button

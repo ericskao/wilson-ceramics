@@ -1,16 +1,16 @@
 import { weekDatesWithOffset } from '@/utils/date';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const weekOffset = request.nextUrl.searchParams.get('offset');
 
-  try {
-    const { startDate, endDate } = weekDatesWithOffset(weekOffset);
+  const { startDate, endDate } = weekDatesWithOffset(weekOffset);
 
+  try {
     const supabase = createClient();
     const { data, error } = await supabase
-      .from('reservations')
+      .from('day_details')
       .select('*')
       .gte('date', startDate)
       .lte('date', endDate);
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       console.error(error);
       return NextResponse.json({
         status: 400,
-        message: 'Failed to get reservations',
+        message: 'Failed to get details for the day',
       });
     } else {
       return NextResponse.json({ data, status: 200 });

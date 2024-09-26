@@ -1,12 +1,15 @@
 'use client';
 
-import useWeeklyReservations from '@/app/hooks/reservations/useWeeklyReservations';
 import useUser, { UserRoles } from '@/app/hooks/users/useUser';
+import useWeeklyReservations from '@/app/hooks/useWeeklyReservations';
 import { ReservationType } from '@/app/lib/reservationsData';
 import { Button } from '@/app/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { add, format, parseISO, startOfWeek } from 'date-fns';
+import { add, parseISO, startOfWeek } from 'date-fns';
+import { format, formatInTimeZone } from 'date-fns-tz';
 import { useCallback, useMemo, useState } from 'react';
+import DateDetails from './DateDetails';
+import DateDetailsDialog from './DateDetailsDialog';
 import ReservationButton from './ReservationButton';
 import ReservationDialog from './ReservationDialog';
 import Waitlist from './Waitlist';
@@ -21,9 +24,9 @@ const Reservations = () => {
   const [weekOffset, setWeekOffset] = useState(0);
   const [reservationSelected, setReservationSelected] =
     useState<ReservationType | null>(null);
-
+  const [dayDetailsOpen, setDayDetailsOpen] = useState<boolean>(false);
   const { user } = useUser();
-  const { reservations, isFetching } = useWeeklyReservations({
+  const { reservations, isFetching, dayDetails } = useWeeklyReservations({
     offset: weekOffset,
   });
 
@@ -56,6 +59,21 @@ const Reservations = () => {
       setReservationSelected(reservation);
     },
     []
+  );
+
+  const currentTime = new Date();
+  const currentPSTTime = format(currentTime, 'HH:mm', {
+    timeZone: 'America/Los_Angeles',
+  });
+  const hours = currentTime.getHours();
+  const minutes = currentTime.getMinutes();
+
+  const isPastCutoff = hours > 17 || (hours === 17 && minutes >= 45);
+
+  const todayDate = formatInTimeZone(
+    currentTime,
+    'America/Los_Angeles',
+    'yyyy-MM-dd'
   );
 
   if (isFetching) {
@@ -106,13 +124,37 @@ const Reservations = () => {
       <div className="flex flex-col sm:flex-row">
         <div className="flex flex-col gap-y-12 flex-1 min-w-[45%]">
           {Object.keys(reservationsByDate).map((date) => {
+            const isToday = date === todayDate;
+            const pastCutOff = isToday && isPastCutoff;
+            const dateDetails = dayDetails.find(
+              (details) => details.date === date
+            );
             return (
               <div key={date}>
-                <h2 className="text-lg py-8 font-medium">
-                  {format(parseISO(date), 'PPPP')}
+                <h2 className="text-lg pt-6 font-medium flex items-center gap-x-4">
+                  {format(parseISO(date), 'PPPP')}{' '}
+                  {isAdmin && (
+                    <div>
+                      <DateDetailsDialog
+                        date={date}
+                        weekOffset={weekOffset}
+                        open={dayDetailsOpen}
+                        onOpenChange={setDayDetailsOpen}
+                        dateDetails={dateDetails}
+                      />
+                    </div>
+                  )}
                 </h2>
+                {dateDetails && (
+                  <DateDetails
+                    date={date}
+                    dateDetails={dateDetails}
+                    isAdmin={isAdmin}
+                  />
+                )}
                 <div className="flex flex-col gap-y-12">
                   {Object.keys(reservationsByTimeSlotId).map((timeSlotId) => {
+                    // TODO show waitlist only if reservations are all filled, for now set as true for testing
                     const showWaitlist = true;
                     return (
                       <div key={timeSlotId}>
@@ -133,6 +175,7 @@ const Reservations = () => {
                                     reservation={reservation}
                                     isOwner={reservation.user_id === user.id}
                                     isAdmin={isAdmin}
+                                    pastCutoff={pastCutOff}
                                   />
                                 </li>
                               ))}

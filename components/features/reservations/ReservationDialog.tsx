@@ -1,5 +1,5 @@
-import useCancelMutation from '@/app/hooks/reservations/useCancelationMutation';
-import useReserveMutation from '@/app/hooks/reservations/useReserveMutation';
+import useCancelMutation from '@/app/hooks/mutations/reservations/useCancelationMutation';
+import useReserveMutation from '@/app/hooks/mutations/reservations/useReserveMutation';
 import { UserRoles } from '@/app/hooks/users/useUser';
 import { ReservationType } from '@/app/lib/reservationsData';
 import { Button } from '@/app/ui/button';
@@ -11,9 +11,9 @@ import {
 } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import Spinner from '@/components/ui/spinner';
+import { formatPST } from '@/utils/date';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { User } from '@supabase/supabase-js';
-import { format } from 'date-fns';
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Dialog,
@@ -89,7 +89,7 @@ const ReservationDialog = ({
           <DialogHeader>
             <DialogTitle>Wheel {reservation.table_name}</DialogTitle>
             <DialogDescription>
-              {format(reservation.date, 'PPPP')}
+              {formatPST(reservation.date)}
               {' from '}
               <span className="font-semibold text-black text-lg">
                 {TimeSlotEnum[reservation.time_slot_id as 1 | 2 | 3]}

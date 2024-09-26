@@ -29,7 +29,7 @@ export async function verifyOtp(code: string) {
       const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
         user?.id || '',
         {
-          role: 'dashboard_member',
+          role: 'dashboard_user',
         }
       );
 
@@ -38,7 +38,7 @@ export async function verifyOtp(code: string) {
       }
       return { status: 200, message: 'Member verified successfully' };
     } catch (error) {
-      console.error('ERROR VERIFING MEMBER as dashboard_member: ', error);
+      console.error('ERROR VERIFING MEMBER as dashboard_user: ', error);
     }
   } else if (code === process.env.NEXT_PUBLIC_ADMIN_CODE) {
     try {

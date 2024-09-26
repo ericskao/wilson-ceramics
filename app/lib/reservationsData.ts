@@ -23,6 +23,13 @@ export type WaitlistType = {
   };
 };
 
+export type DayDetailType = {
+  id: number;
+  date: string;
+  note?: string;
+  link?: string;
+};
+
 interface FetchReservationsResponse {
   status: 'success' | 'error';
   data?: any[];

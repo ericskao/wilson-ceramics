@@ -44,12 +44,13 @@ const useCancelMutation = ({
       });
       onSuccessCallback?.();
     },
-    onError: () => {
+    onError: (e) => {
       toast({
         title: (
           <div className="flex items-center gap-2 text-white">
             <ExclamationCircleIcon width={24} height={24} />
-            Unable to cancel reservation. Please try again or contact support.
+            {e.message ||
+              'Unable to cancel reservation. Please try again or contact support.'}
           </div>
         ),
         variant: 'destructive',
