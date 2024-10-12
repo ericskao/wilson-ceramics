@@ -62,7 +62,9 @@ export async function google() {
   if (data.url) {
     console.log(
       'redirectUrl',
-      `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`
+      `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`,
+      'data url',
+      data.url
     );
     redirect(data.url); // use the redirect API for your server framework
   }
