@@ -58,14 +58,9 @@ export async function google() {
       redirectTo: `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`,
     },
   });
-  console.log('finshed login', data, data.url);
+
   if (data.url) {
-    console.log(
-      'redirectUrl',
-      `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`,
-      'data url',
-      data.url
-    );
+    console.log('data url', data.url);
     redirect(data.url); // use the redirect API for your server framework
   }
 
