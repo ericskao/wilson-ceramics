@@ -62,11 +62,13 @@ export async function google() {
       redirectTo: `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=reservations`,
     },
   });
+  console.log('redirectTo', `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=reservations`)
   console.log('finshed login', data);
 
   if (data.url) {
     console.log('OAuth URL:', data.url);
     redirect(data.url); // use the redirect API for your server framework
+    //wilson-ceramics.vercel.app/auth/callback?next=dashboard
   }
 
   if (error) {
