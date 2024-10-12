@@ -20,7 +20,9 @@ export default function LoginPage() {
             type="email"
             required
           />
-          <Button formAction={otp}>Send email link</Button>
+          <Button disabled formAction={otp}>
+            Send email link
+          </Button>
         </form>
         <div className="relative w-full my-6">
           <div className="absolute inset-0 flex items-center">
