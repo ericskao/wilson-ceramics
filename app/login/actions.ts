@@ -51,16 +51,21 @@ export async function login(formData: FormData) {
 
 export async function google() {
   const supabase = createClient();
-
+  console.log('logging in via google');
+  console.log(
+    'Redirect URL:',
+    `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`
+  );
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`,
+      redirectTo: `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=reservations`,
     },
   });
+  console.log('finshed login', data);
 
   if (data.url) {
-    console.log('data url', data.url);
+    console.log('OAuth URL:', data.url);
     redirect(data.url); // use the redirect API for your server framework
   }
 

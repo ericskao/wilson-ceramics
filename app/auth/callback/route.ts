@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
 export async function GET(request: Request) {
+  console.log('in CALLBACK');
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   // if "next" is in param, use it as the redirect URL
@@ -13,6 +14,7 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     console.log('exchanged code', code);
     if (!error) {
+      console.log('redirecting to', next);
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
