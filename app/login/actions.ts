@@ -51,7 +51,7 @@ export async function login(formData: FormData) {
 
 export async function google() {
   const supabase = createClient();
-  console.log('logging in via google');
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -60,6 +60,10 @@ export async function google() {
   });
   console.log('finshed login', data, data.url);
   if (data.url) {
+    console.log(
+      'redirectUrl',
+      `${process.env.NEXT_PUBLIC_DOMAIN}/auth/callback?next=dashboard`
+    );
     redirect(data.url); // use the redirect API for your server framework
   }
 
